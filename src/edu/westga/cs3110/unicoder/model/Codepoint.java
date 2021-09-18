@@ -2,7 +2,14 @@ package edu.westga.cs3110.unicoder.model;
 
 public class Codepoint {
 	
+	private static final int UTF8_THREE_BYTE_UPPER_BOUND = 0b1111111111111111;
+	private static final int UTF8_THREE_BYTE_LOWER_BOUND = 0b100000000000;
+	private static final int UTF8_TWO_BYTE_UPPER_BOUND = 0b11111111111;
+	private static final int UTF8_TWO_BYTE_LOWER_BOUND = 0b10000000;
+	private static final int UTF8_SINGLE_BYTE_LOWER_BOUND = 0b0;
+	private static final int UTF8_SINGLE_BYTE_UPPER_BOUND = 0b01111111;
 	private String hex;
+	
 
 	public Codepoint(String hexadecimal) {
 		if (hexadecimal == null) {
@@ -26,11 +33,11 @@ public class Codepoint {
 		int hexAsInt = Integer.parseUnsignedInt(this.hex, 16);
 		
 		
-		if (hexAsInt >= 0b0 && hexAsInt < 0b10000000) {
+		if (hexAsInt >= UTF8_SINGLE_BYTE_LOWER_BOUND && hexAsInt <= UTF8_SINGLE_BYTE_UPPER_BOUND) {
 			return this.encodeAsSingleByteUTF8(hexAsInt);
-		} else if (hexAsInt >= 0b10000000 && hexAsInt < 0b100000000000) {
+		} else if (hexAsInt >= UTF8_TWO_BYTE_LOWER_BOUND && hexAsInt <= UTF8_TWO_BYTE_UPPER_BOUND) {
 			return this.encodeAsTwoByteUTF8(hexAsInt);
-		} else if (hexAsInt >= 0b100000000000 && hexAsInt < 0b1111111111111111) {
+		} else if (hexAsInt >= UTF8_THREE_BYTE_LOWER_BOUND && hexAsInt <= UTF8_THREE_BYTE_UPPER_BOUND) {
 			return this.encodeAsThreeByteUTF8(hexAsInt);
 		} else {
 			throw new IllegalArgumentException("Hex value is out of range for UTF8 encoding");
@@ -47,17 +54,16 @@ public class Codepoint {
 	}
 
 	private String encodeAsSingleByteUTF8(int hexAsInt) {
-		String firstHexDigit = "";
-		String secondHexDigit = "";
-		String result = "00";
+		int firstHexDigit = 0;
+		int secondHexDigit = 0;
+		String result = "";
 		String bits = String.format("%8s", hexAsInt).replace(" ", "0");
-		System.out.println(bits);
 		
-		firstHexDigit = bits.substring(0, 4);
-		secondHexDigit = bits.substring(5, 8);
-		result += firstHexDigit;
-		result += secondHexDigit;
-		System.out.println(result);
+		firstHexDigit = Integer.parseInt(bits.substring(0, 4));
+		secondHexDigit = Integer.parseInt(bits.substring(5, 8));
+		result += Integer.toHexString(firstHexDigit);
+		result += Integer.toHexString(secondHexDigit);
+		result = String.format("%4s", result).replace(" ", "0");
 		
 		return result;
 	}
