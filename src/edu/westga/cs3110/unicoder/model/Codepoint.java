@@ -4,18 +4,18 @@ public class Codepoint {
 	
 	private static final int LOW_SURROGATE_OFFSET = 0b1101110000000000;
 	private static final int HIGH_SURROGATE_OFFSET = 0b1101100000000000;
+	
 	private static final int UTF16_TWO_BYTE_UPPER_BOUND = 0b1111111111111111;
 	private static final int UTF16_TWO_BYTE_MID_LOWER_BOUND = 0b1110000000000000;
 	private static final int UTF16_TWO_BYTE_MID_UPPER_BOUND = 0b1101011111111111;
-	
-	
+		
 	private static final int UTF8_THREE_BYTE_UPPER_BOUND = 0b1111111111111111;
 	private static final int UTF8_THREE_BYTE_LOWER_BOUND = 0b100000000000;
 	private static final int UTF8_TWO_BYTE_UPPER_BOUND = 0b11111111111;
 	private static final int UTF8_TWO_BYTE_LOWER_BOUND = 0b10000000;
 	private static final int UTF8_SINGLE_BYTE_UPPER_BOUND = 0b01111111;
 	
-	private static final int UTF_FOUR_BYTE_UPPER_BOUND = 0b100001111111111111111;
+	private static final int UTF_UPPER_BOUND = 0b100001111111111111111;
 	private static final int UTF_FOUR_BYTE_LOWER_BOUND = 0b10000000000000000;
 	private static final int UTF_LOWER_BOUND = 0b0;
 	
@@ -32,7 +32,11 @@ public class Codepoint {
 	}
 
 	public String toUTF32() {
-		return null;
+		if (this.hex < UTF_LOWER_BOUND || this.hex > UTF_UPPER_BOUND) {
+			throw new IllegalArgumentException("Hex value out of range for UTF encoding");
+		}
+		String result = String.format("%8s", Integer.toHexString(this.hex)).replace(" ", "0");
+		return result;
 	}
 
 	public String toUTF16() {
@@ -43,7 +47,7 @@ public class Codepoint {
 			return this.encodeAsTwoByteUTF16(this.hex);
 		} else if (this.hex >= UTF16_TWO_BYTE_MID_UPPER_BOUND && this.hex <= UTF16_TWO_BYTE_UPPER_BOUND) {
 			return this.encodeAsTwoByteUTF16(this.hex);
-		} else if (this.hex >= UTF_FOUR_BYTE_LOWER_BOUND && this.hex <= UTF_FOUR_BYTE_UPPER_BOUND) {
+		} else if (this.hex >= UTF_FOUR_BYTE_LOWER_BOUND && this.hex <= UTF_UPPER_BOUND) {
 			return this.encodeAsFourByteUTF16(this.hex);
 		} else {
 			throw new IllegalArgumentException("Hex value out of range for UTF-16 encoding");
@@ -81,7 +85,7 @@ public class Codepoint {
 			return this.encodeAsTwoByteUTF8(this.hex);
 		} else if (this.hex >= UTF8_THREE_BYTE_LOWER_BOUND && this.hex <= UTF8_THREE_BYTE_UPPER_BOUND) {
 			return this.encodeAsThreeByteUTF8(this.hex);
-		} else if (this.hex >= UTF_FOUR_BYTE_LOWER_BOUND && this.hex <= UTF_FOUR_BYTE_UPPER_BOUND) {
+		} else if (this.hex >= UTF_FOUR_BYTE_LOWER_BOUND && this.hex <= UTF_UPPER_BOUND) {
 			return this.encodeAsFourByteUTF8(this.hex);
 		} else {
 			throw new IllegalArgumentException("Hex value out of range for UTF-8 encoding");
