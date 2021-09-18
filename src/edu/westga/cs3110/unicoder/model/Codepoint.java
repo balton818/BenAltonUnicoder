@@ -2,17 +2,22 @@ package edu.westga.cs3110.unicoder.model;
 
 public class Codepoint {
 	
-	private static final int UTF8_FOUR_BYTE_UPPER_BOUND = 0b100001111111111111111;
-	private static final int UTF8_FOUR_BYTE_LOWER_BOUND = 0b10000000000000000;
+	private static final int UTF16_TWO_BYTE_UPPER_BOUND = 0b1111111111111111;
+	private static final int UTF16_TWO_BYTE_MID_LOWER_BOUND = 0b1110000000000000;
+	private static final int UTF16_TWO_BYTE_MID_UPPER_BOUND = 0b1101011111111111;
+	
+	
 	private static final int UTF8_THREE_BYTE_UPPER_BOUND = 0b1111111111111111;
 	private static final int UTF8_THREE_BYTE_LOWER_BOUND = 0b100000000000;
 	private static final int UTF8_TWO_BYTE_UPPER_BOUND = 0b11111111111;
 	private static final int UTF8_TWO_BYTE_LOWER_BOUND = 0b10000000;
-	private static final int UTF8_SINGLE_BYTE_LOWER_BOUND = 0b0;
 	private static final int UTF8_SINGLE_BYTE_UPPER_BOUND = 0b01111111;
-
-	private String hex;
 	
+	private static final int UTF_FOUR_BYTE_UPPER_BOUND = 0b100001111111111111111;
+	private static final int UTF_FOUR_BYTE_LOWER_BOUND = 0b10000000000000000;
+	private static final int UTF_LOWER_BOUND = 0b0;
+	
+	private int hex;
 
 	public Codepoint(String hexadecimal) {
 		if (hexadecimal == null) {
@@ -21,7 +26,7 @@ public class Codepoint {
 		if (hexadecimal.isEmpty()) {
 			throw new IllegalArgumentException("Hexadecimal string cannot be empty");
 		}
-		this.hex = hexadecimal;
+		this.hex = Integer.parseUnsignedInt(hexadecimal, 16);
 	}
 
 	public String toUTF32() {
@@ -29,22 +34,44 @@ public class Codepoint {
 	}
 
 	public String toUTF16() {
+		if (this.hex > UTF16_TWO_BYTE_MID_UPPER_BOUND && this.hex < UTF16_TWO_BYTE_MID_LOWER_BOUND) {
+			throw new IllegalArgumentException("Hex value inside invalid range for UTF-16 encoding");
+		}
+		if (this.hex >= UTF_LOWER_BOUND && this.hex <= UTF16_TWO_BYTE_MID_LOWER_BOUND) {
+			return this.encodeAsTwoByteUTF16(this.hex);
+		} else if (this.hex >= UTF16_TWO_BYTE_MID_UPPER_BOUND && this.hex <= UTF16_TWO_BYTE_UPPER_BOUND) {
+			return this.encodeAsTwoByteUTF16(this.hex);
+		} else if (this.hex >= UTF_FOUR_BYTE_LOWER_BOUND && this.hex <= UTF_FOUR_BYTE_UPPER_BOUND) {
+			return this.encodeAsFourByteUTF16(this.hex);
+		} else {
+			throw new IllegalArgumentException("Hex value out of range for UTF-16 encoding");
+		}
+	}
+
+	private String encodeAsFourByteUTF16(int hexAsInt) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
+	private String encodeAsTwoByteUTF16(int hexAsInt) {
+		String result = Integer.toHexString(hexAsInt);
+		result = String.format("%4s", result);
+		
+		return result;
+	}
+
 	public String toUTF8() {
-		int hexAsInt = Integer.parseUnsignedInt(this.hex, 16);
 				
-		if (hexAsInt >= UTF8_SINGLE_BYTE_LOWER_BOUND && hexAsInt <= UTF8_SINGLE_BYTE_UPPER_BOUND) {
-			return this.encodeAsSingleByteUTF8(hexAsInt);
-		} else if (hexAsInt >= UTF8_TWO_BYTE_LOWER_BOUND && hexAsInt <= UTF8_TWO_BYTE_UPPER_BOUND) {
-			return this.encodeAsTwoByteUTF8(hexAsInt);
-		} else if (hexAsInt >= UTF8_THREE_BYTE_LOWER_BOUND && hexAsInt <= UTF8_THREE_BYTE_UPPER_BOUND) {
-			return this.encodeAsThreeByteUTF8(hexAsInt);
-		} else if (hexAsInt >= UTF8_FOUR_BYTE_LOWER_BOUND && hexAsInt <= UTF8_FOUR_BYTE_UPPER_BOUND) {
-			return this.encodeAsFourByteUTF8(hexAsInt);
+		if (this.hex >= UTF_LOWER_BOUND && this.hex <= UTF8_SINGLE_BYTE_UPPER_BOUND) {
+			return this.encodeAsSingleByteUTF8(this.hex);
+		} else if (this.hex >= UTF8_TWO_BYTE_LOWER_BOUND && this.hex <= UTF8_TWO_BYTE_UPPER_BOUND) {
+			return this.encodeAsTwoByteUTF8(this.hex);
+		} else if (this.hex >= UTF8_THREE_BYTE_LOWER_BOUND && this.hex <= UTF8_THREE_BYTE_UPPER_BOUND) {
+			return this.encodeAsThreeByteUTF8(this.hex);
+		} else if (this.hex >= UTF_FOUR_BYTE_LOWER_BOUND && this.hex <= UTF_FOUR_BYTE_UPPER_BOUND) {
+			return this.encodeAsFourByteUTF8(this.hex);
 		} else {
-			throw new IllegalArgumentException("Hex value is out of range for UTF8 encoding");
+			throw new IllegalArgumentException("Hex value out of range for UTF-8 encoding");
 		}
 	}
 
