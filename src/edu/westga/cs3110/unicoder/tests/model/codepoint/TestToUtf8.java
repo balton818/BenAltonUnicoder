@@ -47,5 +47,32 @@ class TestToUtf8 {
 
 		assertTrue(expected.equalsIgnoreCase(result));
 	}
+	
+	@Test
+	void testTwoByteAtLowerBound() {
+		Codepoint character = new Codepoint("80");
+		String result = character.toUTF8();
+		String expected = "c280";
+
+		assertTrue(expected.equalsIgnoreCase(result));
+	}
+	
+	@Test
+	void testTwoByteInRange() {
+		Codepoint character = new Codepoint("1A0");
+		String result = character.toUTF8();
+		String expected = "c6a0";
+
+		assertTrue(expected.equalsIgnoreCase(result));
+	}
+	
+	@Test
+	void testTwoByteAtUpperBound() {
+		Codepoint character = new Codepoint("07ff");
+		String result = character.toUTF8();
+		String expected = "dfbf";
+
+		assertTrue(expected.equalsIgnoreCase(result));
+	}
 
 }

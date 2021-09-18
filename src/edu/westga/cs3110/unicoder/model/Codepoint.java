@@ -8,6 +8,7 @@ public class Codepoint {
 	private static final int UTF8_TWO_BYTE_LOWER_BOUND = 0b10000000;
 	private static final int UTF8_SINGLE_BYTE_LOWER_BOUND = 0b0;
 	private static final int UTF8_SINGLE_BYTE_UPPER_BOUND = 0b01111111;
+
 	private String hex;
 	
 
@@ -31,8 +32,7 @@ public class Codepoint {
 
 	public String toUTF8() {
 		int hexAsInt = Integer.parseUnsignedInt(this.hex, 16);
-		
-		
+				
 		if (hexAsInt >= UTF8_SINGLE_BYTE_LOWER_BOUND && hexAsInt <= UTF8_SINGLE_BYTE_UPPER_BOUND) {
 			return this.encodeAsSingleByteUTF8(hexAsInt);
 		} else if (hexAsInt >= UTF8_TWO_BYTE_LOWER_BOUND && hexAsInt <= UTF8_TWO_BYTE_UPPER_BOUND) {
@@ -50,7 +50,20 @@ public class Codepoint {
 	}
 
 	private String encodeAsTwoByteUTF8(int hexAsInt) {
-		return null;
+		String upperBits = "110";
+		String lowerBits = "10";
+		String result = "";
+		String bits = String.format("%12s", Integer.toBinaryString(hexAsInt)).replace(" ", "0");
+		
+		String firstSet = String.format("%5s", Integer.parseInt(bits.substring(0, 6))).replace(" ", "0");
+		String secondSet = String.format("%6s", Integer.parseInt(bits.substring(6, 12))).replace(" ", "0");
+		upperBits += firstSet;
+		lowerBits += secondSet;
+		
+		result = upperBits + lowerBits;
+		result = Integer.toHexString(Integer.parseInt(result, 2));
+		
+		return result;
 	}
 
 	private String encodeAsSingleByteUTF8(int hexAsInt) {
