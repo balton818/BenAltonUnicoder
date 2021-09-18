@@ -2,6 +2,8 @@ package edu.westga.cs3110.unicoder.model;
 
 public class Codepoint {
 	
+	private static final int LOW_SURROGATE_OFFSET = 0b1101110000000000;
+	private static final int HIGH_SURROGATE_OFFSET = 0b1101100000000000;
 	private static final int UTF16_TWO_BYTE_UPPER_BOUND = 0b1111111111111111;
 	private static final int UTF16_TWO_BYTE_MID_LOWER_BOUND = 0b1110000000000000;
 	private static final int UTF16_TWO_BYTE_MID_UPPER_BOUND = 0b1101011111111111;
@@ -49,8 +51,19 @@ public class Codepoint {
 	}
 
 	private String encodeAsFourByteUTF16(int hexAsInt) {
-		// TODO Auto-generated method stub
-		return null;
+		int point = hexAsInt - UTF_FOUR_BYTE_LOWER_BOUND;
+		String bits = String.format("%20s", Integer.toBinaryString(point)).replace(" ", "0");
+		
+		int hiBytes = Integer.parseInt(bits.substring(0, 10), 2);
+		int loBytes = Integer.parseInt(bits.substring(10, 20), 2);
+		
+		String hiSurr = Integer.toHexString(HIGH_SURROGATE_OFFSET + hiBytes);
+		String loSurr = Integer.toHexString((LOW_SURROGATE_OFFSET + loBytes));
+		
+		String result = hiSurr + loSurr;
+		result = String.format("%8s", result).replace(" ", "0");
+				
+		return result;
 	}
 
 	private String encodeAsTwoByteUTF16(int hexAsInt) {

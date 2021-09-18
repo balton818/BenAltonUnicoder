@@ -65,5 +65,32 @@ class TestToUtf16 {
 
 		assertTrue(expected.equalsIgnoreCase(result));
 	}
+	
+	@Test
+	void testFourByteAtLowerBound() {
+		Codepoint character = new Codepoint("10000");
+		String result = character.toUTF16();
+		String expected = "d800dc00";
+
+		assertTrue(expected.equalsIgnoreCase(result));
+	}
+	
+	@Test
+	void testFourByteInRange() {
+		Codepoint character = new Codepoint("2B74D");
+		String result = character.toUTF16();
+		String expected = "D86DdF4D";
+
+		assertTrue(expected.equalsIgnoreCase(result));
+	}
+	
+	@Test
+	void testFourByteAtUpperBound() {
+		Codepoint character = new Codepoint("10FFFF");
+		String result = character.toUTF16();
+		String expected = "dbFFdFfF";
+
+		assertTrue(expected.equalsIgnoreCase(result));
+	}
 
 }
