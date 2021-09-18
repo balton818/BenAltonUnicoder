@@ -2,6 +2,8 @@ package edu.westga.cs3110.unicoder.model;
 
 public class Codepoint {
 	
+	private static final int UTF8_FOUR_BYTE_UPPER_BOUND = 0b100001111111111111111;
+	private static final int UTF8_FOUR_BYTE_LOWER_BOUND = 0b10000000000000000;
 	private static final int UTF8_THREE_BYTE_UPPER_BOUND = 0b1111111111111111;
 	private static final int UTF8_THREE_BYTE_LOWER_BOUND = 0b100000000000;
 	private static final int UTF8_TWO_BYTE_UPPER_BOUND = 0b11111111111;
@@ -39,14 +41,54 @@ public class Codepoint {
 			return this.encodeAsTwoByteUTF8(hexAsInt);
 		} else if (hexAsInt >= UTF8_THREE_BYTE_LOWER_BOUND && hexAsInt <= UTF8_THREE_BYTE_UPPER_BOUND) {
 			return this.encodeAsThreeByteUTF8(hexAsInt);
+		} else if (hexAsInt >= UTF8_FOUR_BYTE_LOWER_BOUND && hexAsInt <= UTF8_FOUR_BYTE_UPPER_BOUND) {
+			return this.encodeAsFourByteUTF8(hexAsInt);
 		} else {
 			throw new IllegalArgumentException("Hex value is out of range for UTF8 encoding");
 		}
 	}
 
-	private String encodeAsThreeByteUTF8(int hexAsInt) {
+	private String encodeAsFourByteUTF8(int hexAsInt) {
+		String hiByte = "11110";
+		String midByte1 = "10";
+		String midByte2 = "10";
+		String loByte = "10";
+		String bits = String.format("%21s", Integer.toBinaryString(hexAsInt)).replace(" ", "0");
+		String result = "";
 		
-		return null;
+		String firstSet = bits.substring(0, 3);
+		hiByte += firstSet;
+		String secondSet = bits.substring(3, 9);
+		midByte1 += secondSet;
+		String thirdSet = bits.substring(9, 15);
+		midByte2 += thirdSet;
+		String fourthSet = bits.substring(15, 21);
+		loByte += fourthSet;
+		
+		result = hiByte + midByte1 + midByte2 + loByte;
+		result = Integer.toHexString(Integer.parseInt(result, 2));
+		
+		return result;
+	}
+
+	private String encodeAsThreeByteUTF8(int hexAsInt) {
+		String hiByte = "1110";
+		String midByte = "10";
+		String loByte = "10";
+		String bits = String.format("%16s", Integer.toBinaryString(hexAsInt)).replace(" ", "0");
+		String result = "";
+		
+		String firstSet = bits.substring(0, 4);
+		hiByte += firstSet;
+		String secondSet = bits.substring(4, 10);
+		midByte += secondSet;
+		String thirdSet = bits.substring(10, 16);
+		loByte += thirdSet;
+		
+		result = hiByte + midByte + loByte;
+		result = Integer.toHexString(Integer.parseInt(result, 2));
+		
+		return result;
 	}
 
 	private String encodeAsTwoByteUTF8(int hexAsInt) {
