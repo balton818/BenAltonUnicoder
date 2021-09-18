@@ -10,8 +10,8 @@ class TestToUtf8 {
 
 	@Test
 	void testOutOfBoundValue() {
-		Codepoint character1 = new Codepoint("1FFFF");
-		Codepoint character2 = new Codepoint("FFFFF");
+		Codepoint character1 = new Codepoint("11FFFF");
+		Codepoint character2 = new Codepoint("FFFFFF");
 		assertAll(
 
 				() -> assertThrows(IllegalArgumentException.class, () -> {
@@ -103,4 +103,30 @@ class TestToUtf8 {
 		assertTrue(expected.equalsIgnoreCase(result));
 	}
 
+	@Test
+	void testFourByteAtLowerBound() {
+		Codepoint character = new Codepoint("10000");
+		String result = character.toUTF8();
+		String expected = "f0908080";
+
+		assertTrue(expected.equalsIgnoreCase(result));
+	}
+	
+	@Test
+	void testFourByteInRange() {
+		Codepoint character = new Codepoint("10C1C");
+		String result = character.toUTF8();
+		String expected = "f090B09C";
+
+		assertTrue(expected.equalsIgnoreCase(result));
+	}
+	
+	@Test
+	void testFourByteAtUpperBound() {
+		Codepoint character = new Codepoint("10FFFF");
+		String result = character.toUTF8();
+		String expected = "f48FbFBf";
+
+		assertTrue(expected.equalsIgnoreCase(result));
+	}
 }

@@ -58,15 +58,21 @@ public class Codepoint {
 		
 		String firstSet = bits.substring(0, 3);
 		hiByte += firstSet;
+		hiByte = Integer.toHexString(Integer.parseInt(hiByte, 2));
+		
 		String secondSet = bits.substring(3, 9);
 		midByte1 += secondSet;
+		midByte1 = Integer.toHexString(Integer.parseInt(midByte1, 2));
+		
 		String thirdSet = bits.substring(9, 15);
 		midByte2 += thirdSet;
+		midByte2 = Integer.toHexString(Integer.parseInt(midByte2, 2));
+		
 		String fourthSet = bits.substring(15, 21);
 		loByte += fourthSet;
+		loByte = Integer.toHexString(Integer.parseInt(loByte, 2));
 		
 		result = hiByte + midByte1 + midByte2 + loByte;
-		result = Integer.toHexString(Integer.parseInt(result, 2));
 		
 		return result;
 	}
@@ -80,8 +86,10 @@ public class Codepoint {
 		
 		String firstSet = bits.substring(0, 4);
 		hiByte += firstSet;
+		
 		String secondSet = bits.substring(4, 10);
 		midByte += secondSet;
+		
 		String thirdSet = bits.substring(10, 16);
 		loByte += thirdSet;
 		
